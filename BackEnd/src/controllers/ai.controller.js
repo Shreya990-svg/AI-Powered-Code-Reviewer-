@@ -15,10 +15,10 @@ module.exports.getReview = async (req, res) => {
     return res.status(200).json(response);
 
   } catch (error) {
-    console.error("AI Service Error:", error.message);
+     console.error("AI Service Error FULL:", error);
 
-    return res.status(503).json({
-      error: "AI service is temporarily unavailable. Please try again later."
-    });
+  return res.status(503).json({
+    error: error.message || "AI service error"
+  });
   }
 };
