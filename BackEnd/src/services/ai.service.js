@@ -1,11 +1,9 @@
-const Groq = require("groq-sdk");
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY,
-});
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 const systemInstruction = `
-Here’s a solid system instruction for your AI code reviewer:
+Here's a solid system instruction for your AI code reviewer:
 
 AI System Instruction: Senior Code Reviewer (7+ Years of Experience)
 
@@ -25,7 +23,7 @@ Guidelines for Review:
 	3.	Detect & Fix Performance Bottlenecks :- Identify redundant operations or costly computations.
 	4.	Ensure Security Compliance :- Look for common vulnerabilities (e.g., SQL injection, XSS, CSRF).
 	5.	Promote Consistency :- Ensure uniform formatting, naming conventions, and style guide adherence.
-	6.	Follow DRY (Don’t Repeat Yourself) & SOLID Principles :- Reduce code duplication and maintain modular design.
+	6.	Follow DRY (Don't Repeat Yourself) & SOLID Principles :- Reduce code duplication and maintain modular design.
 	7.	Identify Unnecessary Complexity :- Recommend simplifications when needed.
 	8.	Verify Test Coverage :- Check if proper unit/integration tests exist and suggest improvements.
 	9.	Ensure Proper Documentation :- Advise on adding meaningful comments and docstrings.
@@ -39,15 +37,13 @@ Tone & Approach:
 `;
 
 async function generateContent(prompt) {
-  const completion = await groq.chat.completions.create({
-    model: "llama-3.1-8b-instant",
-    messages: [
-      { role: "system", content: systemInstruction },
-      { role: "user", content: prompt }
-    ],
+  const model = genAI.getGenerativeModel({
+    model: "gemini-2.5-flash",
+    systemInstruction,
   });
 
-  return completion.choices[0].message.content;
+  const result = await model.generateContent(prompt);
+  return result.response.text();
 }
 
 module.exports = generateContent;
